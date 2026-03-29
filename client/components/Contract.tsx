@@ -15,7 +15,7 @@ import { AnimatedCard } from "@/components/ui/animated-card";
 import { Spotlight } from "@/components/ui/spotlight";
 import { ShimmerButton } from "@/components/ui/shimmer-button";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { cn, toSlug, fromSlug } from "@/lib/utils";
 
 // ── Icons ────────────────────────────────────────────────────
 
@@ -214,7 +214,7 @@ function MysteryBoxCard({ box, revealed }: { box: MysteryBox; revealed?: boolean
     >
       <div className="border-b border-white/[0.06] px-4 py-3 flex items-center justify-between">
         <span className="text-[10px] font-medium uppercase tracking-wider text-white/25">
-          Mystery Box #{box.box_id}
+          Mystery Box #{toSlug(box.box_id)}
         </span>
         <div className="flex items-center gap-2">
           {box.is_opened ? (
@@ -345,14 +345,16 @@ export default function ContractUI({ walletAddress, onConnect, isConnecting }: C
       }
 
       if (boxId && boxId > 0) {
+        const slug = toSlug(boxId);
         setCreatedBoxId(boxId);
-        setTxStatus(`Mystery Box #${boxId} created!`);
+        setTxStatus(`Mystery Box #${slug} created!`);
       } else {
         setTxStatus("Mystery Box created successfully!");
       }
       setTimeout(() => setTxStatus(null), 6000);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Transaction failed");
+      const msg = err instanceof Error ? err.message : JSON.stringify(err);
+      setError(msg === "{}" ? "An unknown error occurred" : msg);
       setTxStatus(null);
     } finally {
       setIsCreating(false);
@@ -361,8 +363,10 @@ export default function ContractUI({ walletAddress, onConnect, isConnecting }: C
 
   const handleOpenBox = useCallback(async () => {
     if (!walletAddress) return setError("Connect wallet first");
-    const id = parseInt(openBoxId, 10);
-    if (isNaN(id) || id <= 0) return setError("Enter a valid box ID");
+    
+    const id = fromSlug(openBoxId);
+    if (!id || id <= 0) return setError("Enter a valid 6-digit Box ID Code");
+    
     setError(null);
     setIsOpening(true);
     setRevealedBox(null);
@@ -374,16 +378,17 @@ export default function ContractUI({ walletAddress, onConnect, isConnecting }: C
         const boxData = await viewBox(id, walletAddress);
         if (boxData) {
           setRevealedBox(boxData);
-          setTxStatus(`Box #${id} revealed — ${getRarityConfig(boxData.rarity).emoji} ${boxData.rarity}!`);
+          setTxStatus(`Box #${openBoxId.toUpperCase()} revealed — ${getRarityConfig(boxData.rarity).emoji} ${boxData.rarity}!`);
         } else {
-          setTxStatus(`Box #${id} opened successfully!`);
+          setTxStatus(`Box #${openBoxId.toUpperCase()} opened successfully!`);
         }
       } catch {
-        setTxStatus(`Box #${id} opened successfully!`);
+        setTxStatus(`Box #${openBoxId.toUpperCase()} opened successfully!`);
       }
       setTimeout(() => setTxStatus(null), 8000);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Transaction failed");
+      const msg = err instanceof Error ? err.message : JSON.stringify(err);
+      setError(msg === "{}" ? "An unknown error occurred" : msg);
       setTxStatus(null);
     } finally {
       setIsOpening(false);
@@ -391,8 +396,9 @@ export default function ContractUI({ walletAddress, onConnect, isConnecting }: C
   }, [walletAddress, openBoxId]);
 
   const handleViewBox = useCallback(async () => {
-    const id = parseInt(viewBoxId, 10);
-    if (isNaN(id) || id <= 0) return setError("Enter a valid box ID");
+    const id = fromSlug(viewBoxId);
+    if (!id || id <= 0) return setError("Enter a valid 6-digit Box ID Code");
+    
     setError(null);
     setIsViewing(true);
     setViewedBox(null);
@@ -404,7 +410,8 @@ export default function ContractUI({ walletAddress, onConnect, isConnecting }: C
         setError("Box not found");
       }
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Query failed");
+      const msg = err instanceof Error ? err.message : JSON.stringify(err);
+      setError(msg === "{}" ? "An unknown error occurred" : msg);
     } finally {
       setIsViewing(false);
     }
@@ -421,7 +428,8 @@ export default function ContractUI({ walletAddress, onConnect, isConnecting }: C
         setError("Could not load stats");
       }
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Query failed");
+      const msg = err instanceof Error ? err.message : JSON.stringify(err);
+      setError(msg === "{}" ? "An unknown error occurred" : msg);
     } finally {
       setIsLoadingStats(false);
     }
@@ -558,7 +566,7 @@ export default function ContractUI({ walletAddress, onConnect, isConnecting }: C
                   <div className="rounded-xl border border-[#34d399]/20 bg-[#34d399]/[0.05] p-4 text-center animate-fade-in-up">
                     <p className="text-3xl mb-2">🎁</p>
                     <p className="text-sm text-[#34d399]/90 font-medium">
-                      Mystery Box #{createdBoxId} Created!
+                      Mystery Box #{toSlug(createdBoxId)} Created!
                     </p>
                     <p className="text-xs text-white/30 mt-1">Use the &quot;Reveal&quot; tab to open it</p>
                   </div>
@@ -572,11 +580,12 @@ export default function ContractUI({ walletAddress, onConnect, isConnecting }: C
                 <MethodSignature name="open_box" params="(box_id: u64)" returns="→ MysteryBox" color="#fbbf24" />
 
                 <Input
-                  label="Box ID"
-                  type="number"
+                  label="Box ID Code"
+                  type="text"
+                  maxLength={6}
                   value={openBoxId}
-                  onChange={(e) => setOpenBoxId(e.target.value)}
-                  placeholder="e.g. 1"
+                  onChange={(e) => setOpenBoxId(e.target.value.toUpperCase())}
+                  placeholder="e.g. 10000X"
                 />
 
                 {walletAddress ? (
@@ -604,11 +613,12 @@ export default function ContractUI({ walletAddress, onConnect, isConnecting }: C
               <div className="space-y-5">
                 <MethodSignature name="view_box" params="(box_id: u64)" returns="→ MysteryBox" color="#4fc3f7" />
                 <Input
-                  label="Box ID"
-                  type="number"
+                  label="Box ID Code"
+                  type="text"
+                  maxLength={6}
                   value={viewBoxId}
-                  onChange={(e) => setViewBoxId(e.target.value)}
-                  placeholder="e.g. 1"
+                  onChange={(e) => setViewBoxId(e.target.value.toUpperCase())}
+                  placeholder="e.g. 10000X"
                 />
                 <ShimmerButton onClick={handleViewBox} disabled={isViewing} shimmerColor="#4fc3f7" className="w-full">
                   {isViewing ? <><SpinnerIcon /> Querying...</> : <><SearchIcon /> View Box Details</>}

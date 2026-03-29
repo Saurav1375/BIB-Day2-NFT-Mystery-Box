@@ -128,9 +128,8 @@ export async function callContract(
   const simulated = await server.simulateTransaction(tx);
 
   if (rpc.Api.isSimulationError(simulated)) {
-    throw new Error(
-      `Simulation failed: ${(simulated as rpc.Api.SimulateTransactionErrorResponse).error}`
-    );
+    const errorMsg = (simulated as rpc.Api.SimulateTransactionErrorResponse).error || "Unknown simulation error";
+    throw new Error(`Simulation failed: ${errorMsg}`);
   }
 
   if (!sign) {
@@ -165,12 +164,12 @@ export async function callContract(
     let detail = "";
     try {
       if (getResult.resultXdr) {
-        detail = ` — ${getResult.resultXdr}`;
+        detail = ` (Result XDR: ${getResult.resultXdr})`;
       }
     } catch {
       // ignore
     }
-    throw new Error(`Transaction failed on chain${detail}`);
+    throw new Error(`Transaction failed: ${getResult.status}${detail}`);
   }
 
   return getResult;
