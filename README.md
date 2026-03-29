@@ -1,7 +1,12 @@
 # NFT Mystery Box 🎁
 
 <div align="center">
-  <img src="file:///home/sauravg/.gemini/antigravity/brain/19a3e8d5-ca58-4f6f-baf3-a97fd0757e21/nft_mystery_box_mascot_1774775613312.png" alt="NFT Mystery Box Mascot" width="400">
+  <img src="assets/nft_mystery_box_mascot_1774775613312.png" alt="NFT Mystery Box Mascot" width="400">
+  
+  [![Website Logo](assets/Screenshot_20260329_155833.png)](https://bib-day2-nft-mystery-box.vercel.app/)
+  
+  <h3>🚀 [Live Demo](https://bib-day2-nft-mystery-box.vercel.app/)</h3>
+  
   <p><i>Empowering decentralized collectibles on the Stellar network.</i></p>
 </div>
 
