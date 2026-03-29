@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Stellar Dapp",
+  title: "NFT Mystery Box — Decentralized Loot Boxes on Stellar",
   description:
-    "Fullstack Dapp built on Stellar",
+    "Create, reveal, and collect NFT mystery boxes with on-chain rarity tiers. Built on Stellar with Soroban smart contracts.",
 };
 
 export default function RootLayout({

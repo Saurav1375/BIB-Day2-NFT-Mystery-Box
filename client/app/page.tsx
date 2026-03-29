@@ -52,7 +52,7 @@ export default function Home() {
       {/* Ambient orbs */}
       <div className="pointer-events-none fixed inset-0 z-0">
         <div className="absolute top-[-20%] left-[-10%] h-[600px] w-[600px] rounded-full bg-[#7c6cf0]/20 blur-[120px] animate-float" />
-        <div className="absolute bottom-[-10%] right-[-5%] h-[500px] w-[500px] rounded-full bg-[#4fc3f7]/15 blur-[120px] animate-float-delayed" />
+        <div className="absolute bottom-[-10%] right-[-5%] h-[500px] w-[500px] rounded-full bg-[#fbbf24]/10 blur-[120px] animate-float-delayed" />
       </div>
 
       {/* Navbar */}
@@ -65,7 +65,7 @@ export default function Home() {
 
       {/* Hero + Content */}
       <main className="relative z-10 flex flex-1 w-full max-w-5xl mx-auto flex-col items-center px-6 pt-10 pb-16">
-        {/* Hero — compact */}
+        {/* Hero */}
         <div className="mb-10 text-center animate-fade-in-up">
           <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-4 py-1.5 text-sm text-white/50 backdrop-blur-sm">
             <span className="relative flex h-2 w-2">
@@ -77,15 +77,15 @@ export default function Home() {
 
           <h1 className="mb-3">
             <span className="block text-4xl sm:text-5xl font-bold tracking-tight leading-[1.1]">
-              <span className="text-white">Supply Chain </span>
-              <span className="bg-gradient-to-r from-[#7c6cf0] via-[#4fc3f7] to-[#7c6cf0] bg-[length:200%_auto] animate-gradient-shift bg-clip-text text-transparent">
-                on the Blockchain
+              <span className="text-white">NFT Mystery </span>
+              <span className="bg-gradient-to-r from-[#7c6cf0] via-[#fbbf24] to-[#7c6cf0] bg-[length:200%_auto] animate-gradient-shift bg-clip-text text-transparent">
+                Box
               </span>
             </span>
           </h1>
 
           <p className="mx-auto max-w-lg text-sm sm:text-base leading-relaxed text-white/40">
-            Register products, track shipments, and verify authenticity — immutably on Stellar.
+            Create sealed mystery boxes, reveal hidden NFT rarity tiers, and track your collection — all immutably on Stellar.
           </p>
 
           {/* Inline stats */}
@@ -112,23 +112,23 @@ export default function Home() {
 
         {/* Footer */}
         <div className="mt-10 flex flex-col items-center gap-4 animate-fade-in">
-          {/* Supply chain flow */}
+          {/* Rarity flow */}
           <div className="flex items-center gap-3 text-xs text-white/20">
-            {["Created", "Shipped", "Delivered"].map((step, i) => (
-              <span key={step} className="flex items-center gap-3">
+            {[
+              { step: "Common", color: "#94a3b8" },
+              { step: "Rare", color: "#4fc3f7" },
+              { step: "Epic", color: "#a855f7" },
+              { step: "Legendary", color: "#fbbf24" },
+            ].map((item, i) => (
+              <span key={item.step} className="flex items-center gap-3">
                 <span className="flex items-center gap-1.5">
                   <span
-                    className={`h-1.5 w-1.5 rounded-full ${
-                      i === 0
-                        ? "bg-[#fbbf24]/50"
-                        : i === 1
-                          ? "bg-[#4fc3f7]/50"
-                          : "bg-[#34d399]/50"
-                    }`}
+                    className="h-1.5 w-1.5 rounded-full"
+                    style={{ backgroundColor: `${item.color}80` }}
                   />
-                  <span className="font-mono">{step}</span>
+                  <span className="font-mono">{item.step}</span>
                 </span>
-                {i < 2 && (
+                {i < 3 && (
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-white/10">
                     <path d="M5 12h14M12 5l7 7-7 7" />
                   </svg>

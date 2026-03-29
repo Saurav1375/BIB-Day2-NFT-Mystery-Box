@@ -6,7 +6,6 @@ import {
   TransactionBuilder,
   Keypair,
   xdr,
-  Address,
   nativeToScVal,
   scValToNative,
   rpc,
@@ -21,21 +20,18 @@ import {
 } from "@stellar/freighter-api";
 
 // ============================================================
-// CONSTANTS — Update these for your contract
+// CONSTANTS
 // ============================================================
 
-/** Your deployed Soroban contract ID */
+/** Deployed NFT Mystery Box contract ID */
 export const CONTRACT_ADDRESS =
-  "CDJVMAX34YRCQ5JFC6SIOQOVSUY6XWEFYJOLF3SBCKU7CMI3IAP6HPWN";
+  "CAMRESPDOECQDKX262Q4VZPAIP4ZRVYKG4I3J3VVXJSUBSIPTMEDC7JJ";
 
-/** Network passphrase (testnet by default) */
+/** Network passphrase (testnet) */
 export const NETWORK_PASSPHRASE = Networks.TESTNET;
 
 /** Soroban RPC URL */
 export const RPC_URL = "https://soroban-testnet.stellar.org";
-
-/** Horizon URL */
-export const HORIZON_URL = "https://horizon-testnet.stellar.org";
 
 /** Network name for Freighter */
 export const NETWORK = "TESTNET";
@@ -45,6 +41,25 @@ export const NETWORK = "TESTNET";
 // ============================================================
 
 const server = new rpc.Server(RPC_URL);
+
+// ============================================================
+// Types
+// ============================================================
+
+export interface MysteryBox {
+  box_id: number;
+  owner: string;
+  rarity: string;
+  is_opened: boolean;
+  created_at: number;
+  opened_at: number;
+}
+
+export interface PlatformStats {
+  total_boxes: number;
+  opened_boxes: number;
+  unopened_boxes: number;
+}
 
 // ============================================================
 // Wallet Helpers
@@ -93,15 +108,6 @@ export async function getWalletAddress(): Promise<string | null> {
 // Contract Interaction Helpers
 // ============================================================
 
-/**
- * Build, simulate, and optionally sign + submit a Soroban contract call.
- *
- * @param method   - The contract method name to invoke
- * @param params   - Array of xdr.ScVal parameters for the method
- * @param caller   - The public key (G...) of the calling account
- * @param sign     - If true, signs via Freighter and submits. If false, only simulates.
- * @returns        The result of the simulation or submission
- */
 export async function callContract(
   method: string,
   params: xdr.ScVal[] = [],
@@ -128,14 +134,11 @@ export async function callContract(
   }
 
   if (!sign) {
-    // Read-only call — just return the simulation result
     return simulated;
   }
 
-  // Prepare the transaction with the simulation result
   const prepared = rpc.assembleTransaction(tx, simulated).build();
 
-  // Sign with Freighter
   const { signedTxXdr } = await signTransaction(prepared.toXDR(), {
     networkPassphrase: NETWORK_PASSPHRASE,
   });
@@ -159,22 +162,27 @@ export async function callContract(
   }
 
   if (getResult.status === "FAILED") {
-    throw new Error("Transaction failed on chain.");
+    let detail = "";
+    try {
+      if (getResult.resultXdr) {
+        detail = ` — ${getResult.resultXdr}`;
+      }
+    } catch {
+      // ignore
+    }
+    throw new Error(`Transaction failed on chain${detail}`);
   }
 
   return getResult;
 }
 
-/**
- * Read-only contract call (does not require signing).
- */
 export async function readContract(
   method: string,
   params: xdr.ScVal[] = [],
   caller?: string
 ) {
   const account =
-    caller || Keypair.random().publicKey(); // Use a random keypair for read-only
+    caller || Keypair.random().publicKey();
   const sim = await callContract(method, params, account, false);
   if (
     rpc.Api.isSimulationSuccess(sim as rpc.Api.SimulateTransactionResponse) &&
@@ -195,74 +203,104 @@ export function toScValString(value: string): xdr.ScVal {
   return nativeToScVal(value, { type: "string" });
 }
 
-export function toScValU32(value: number): xdr.ScVal {
-  return nativeToScVal(value, { type: "u32" });
-}
-
-export function toScValI128(value: bigint): xdr.ScVal {
-  return nativeToScVal(value, { type: "i128" });
-}
-
-export function toScValAddress(address: string): xdr.ScVal {
-  return new Address(address).toScVal();
-}
-
-export function toScValBool(value: boolean): xdr.ScVal {
-  return nativeToScVal(value, { type: "bool" });
+export function toScValU64(value: number): xdr.ScVal {
+  return nativeToScVal(value, { type: "u64" });
 }
 
 // ============================================================
-// Supply Chain Tracker — Contract Methods
+// NFT Mystery Box — Contract Methods
 // ============================================================
 
 /**
- * Add a product to the supply chain.
- * Calls: add_product(product_id: String, origin: String)
+ * Create a new mystery box.
+ * Calls: create_box(owner: String) -> u64
  */
-export async function addProduct(
-  caller: string,
-  productId: string,
-  origin: string
-) {
-  return callContract(
-    "add_product",
-    [toScValString(productId), toScValString(origin)],
+export async function createBox(caller: string, owner: string) {
+  const result = await callContract(
+    "create_box",
+    [toScValString(owner)],
     caller,
     true
   );
+  return result;
 }
 
 /**
- * Update a product's status.
- * Calls: update_status(product_id: String, new_status: String)
+ * Open (reveal) a mystery box.
+ * Calls: open_box(box_id: u64) -> MysteryBox
  */
-export async function updateProductStatus(
-  caller: string,
-  productId: string,
-  newStatus: string
-) {
-  return callContract(
-    "update_status",
-    [toScValString(productId), toScValString(newStatus)],
+export async function openBox(caller: string, boxId: number) {
+  const result = await callContract(
+    "open_box",
+    [toScValU64(boxId)],
     caller,
     true
   );
+  return result;
 }
 
 /**
- * Get product details (read-only).
- * Calls: get_product(product_id: String) -> Map<Symbol, String>
- * Returns: { origin: string, status: string } or null
+ * View a mystery box (read-only).
+ * Calls: view_box(box_id: u64) -> MysteryBox
  */
-export async function getProduct(
-  productId: string,
-  caller?: string
-) {
-  return readContract(
-    "get_product",
-    [toScValString(productId)],
+export async function viewBox(boxId: number, caller?: string): Promise<MysteryBox | null> {
+  const result = await readContract(
+    "view_box",
+    [toScValU64(boxId)],
     caller
   );
+  if (result && typeof result === "object") {
+    return parseMysteryBox(result);
+  }
+  return null;
 }
 
-export { nativeToScVal, scValToNative, Address, xdr };
+/**
+ * View platform stats (read-only).
+ * Calls: view_platform_stats() -> PlatformStats
+ */
+export async function viewPlatformStats(caller?: string): Promise<PlatformStats | null> {
+  const result = await readContract(
+    "view_platform_stats",
+    [],
+    caller
+  );
+  if (result && typeof result === "object") {
+    return {
+      total_boxes: Number(result.total_boxes ?? 0),
+      opened_boxes: Number(result.opened_boxes ?? 0),
+      unopened_boxes: Number(result.unopened_boxes ?? 0),
+    };
+  }
+  return null;
+}
+
+// ============================================================
+// Parsing Helpers
+// ============================================================
+
+function parseMysteryBox(raw: Record<string, unknown>): MysteryBox {
+  // Rarity from Soroban is returned as an enum variant
+  let rarity = "Common";
+  const rawRarity = raw.rarity;
+  if (typeof rawRarity === "string") {
+    rarity = rawRarity;
+  } else if (Array.isArray(rawRarity)) {
+    rarity = String(rawRarity[0] ?? "Common");
+  } else if (rawRarity && typeof rawRarity === "object") {
+    // Handle enum object representation
+    const keys = Object.keys(rawRarity);
+    if (keys.length > 0) rarity = keys[0];
+  }
+
+  return {
+    box_id: Number(raw.box_id ?? 0),
+    owner: String(raw.owner ?? "Unknown"),
+    rarity,
+    is_opened: Boolean(raw.is_opened),
+    created_at: Number(raw.created_at ?? 0),
+    opened_at: Number(raw.opened_at ?? 0),
+  };
+}
+
+export { nativeToScVal, scValToNative, xdr };

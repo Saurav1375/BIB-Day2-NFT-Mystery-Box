@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { useMemo } from "react";
+import { useState, useEffect } from "react";
 
 interface MeteorsProps {
   number?: number;
@@ -9,16 +9,23 @@ interface MeteorsProps {
 }
 
 export function Meteors({ number = 15, className }: MeteorsProps) {
-  const meteors = useMemo(
-    () =>
+  const [meteors, setMeteors] = useState<
+    { id: number; left: string; delay: string; duration: string }[]
+  >([]);
+
+  // Generate random values only on the client to avoid hydration mismatch
+  useEffect(() => {
+    setMeteors(
       Array.from({ length: number }, (_, i) => ({
         id: i,
         left: `${Math.floor(Math.random() * 100)}%`,
         delay: `${(Math.random() * 5).toFixed(1)}s`,
         duration: `${(Math.random() * 3 + 2).toFixed(1)}s`,
-      })),
-    [number]
-  );
+      }))
+    );
+  }, [number]);
+
+  if (meteors.length === 0) return null;
 
   return (
     <>
