@@ -337,8 +337,8 @@ export default function ContractUI({ walletAddress, onConnect, isConnecting }: C
       // Try to extract box ID from the return value
       let boxId: number | null = null;
       try {
-        if (result && result.returnValue) {
-          boxId = Number(scValToNative(result.returnValue));
+        if (result && (result as any).returnValue) {
+          boxId = Number(scValToNative((result as any).returnValue));
         }
       } catch {
         // Return value parsing failed, that's okay
