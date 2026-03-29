@@ -69,3 +69,7 @@ The long-term goal is to evolve this platform into a full NFT marketplace where 
 - 📱 **Frontend dApp** — Build a polished React-based frontend with wallet integration (Freighter) for a seamless user experience.
 - 🎮 **Gamification Layer** — Add achievements, leaderboards, and streak bonuses for users who collect and open multiple mystery boxes.
 - 🔐 **Enhanced Randomness** — Integrate a more robust on-chain randomness solution (e.g., VRF oracles) for provably fair rarity distribution.
+
+## Contract Deployment Details
+- **Contract ID**: CAMRESPDOECQDKX262Q4VZPAIP4ZRVYKG4I3J3VVXJSUBSIPTMEDC7JJ
+- **Contract Screenshot**: <img width="1919" height="985" alt="image" src="https://github.com/user-attachments/assets/35c370c5-e339-4fdd-b299-11cab1645a3e" />
