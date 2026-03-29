@@ -1,5 +1,10 @@
 # NFT Mystery Box 🎁
 
+<div align="center">
+  <img src="file:///home/sauravg/.gemini/antigravity/brain/19a3e8d5-ca58-4f6f-baf3-a97fd0757e21/nft_mystery_box_mascot_1774775613312.png" alt="NFT Mystery Box Mascot" width="400">
+  <p><i>Empowering decentralized collectibles on the Stellar network.</i></p>
+</div>
+
 ## Project Title
 **NFT Mystery Box** — A Decentralized NFT Loot Box Platform on Stellar
 
@@ -7,20 +12,13 @@
 
 ## Project Description
 
-NFT Mystery Box is a blockchain-powered decentralized application (dApp) built on the **Stellar network** using the **Soroban smart contract** framework. The platform allows users to create sealed mystery boxes, each containing a randomly assigned NFT rarity tier — **Common, Rare, Epic, or Legendary**. The rarity of the NFT inside a mystery box remains hidden until the owner decides to reveal it by opening the box on-chain. Every action — from box creation to reveal — is recorded immutably on the Stellar blockchain, ensuring full transparency, fairness, and tamper-proof randomness. The smart contract also maintains real-time platform-wide statistics, giving both users and administrators a live view of the total number of boxes created, opened, and still sealed across the entire platform.
+NFT Mystery Box is a blockchain-powered dApp built on the **Stellar network** using the **Soroban smart contract** framework. The platform enables users to create sealed mystery boxes containing randomly assigned NFT rarity tiers: **Common, Rare, Epic, or Legendary**. Every box creation and reveal is recorded immutably on the Stellar blockchain, ensuring full transparency and tamper-proof fairness. By utilizing verifiable on-chain data for rarity assignment, the platform provides a trustless environment where users can verify the authenticity of their rewards. Real-time platform-wide statistics are also maintained, showing the total number of boxes created and opened, offering a live view of the ecosystem's activity. This project combines gaming excitement with blockchain's core principles of decentralization and provable fairness.
 
 ---
 
 ## Project Vision
 
-The vision behind NFT Mystery Box is to bring the excitement and thrill of collectible loot-box mechanics into the Web3 ecosystem in a **trustless, transparent, and decentralized** manner. Traditional mystery box platforms often suffer from opaque algorithms, unfair drop rates, and centralized control — leaving users with no way to verify the authenticity of their rewards. By leveraging Stellar's Soroban smart contracts, NFT Mystery Box eliminates these pain points entirely:
-
-- **On-Chain Randomness**: Rarity tiers are assigned using verifiable on-chain data (ledger timestamps), not hidden server-side algorithms.
-- **Immutable Records**: Every box creation and reveal is permanently stored on the blockchain — no tampering, no manipulation.
-- **Decentralized Ownership**: Users have full custody over their mystery boxes. No central authority can modify, revoke, or manipulate their assets.
-- **Accessible & Low-Cost**: Built on Stellar's fast and low-fee network, making it accessible to users globally without prohibitive gas costs.
-
-The long-term goal is to evolve this platform into a full NFT marketplace where mystery boxes can be traded, gifted, and integrated with gamified reward ecosystems.
+Our vision is to revolutionize the collectible loot-box market by replacing opaque centralized algorithms with **trustless, verifiable on-chain logic**. Traditional systems often lack transparency, leaving collectors unsure of their true odds. NFT Mystery Box leverages Stellar's efficiency to provide a low-cost, decentralized alternative where rarity is provably fair. By making these mechanics accessible globaly on the Stellar network, we aim to build a transparent ecosystem for digital assets where ownership and probability are beyond manipulation. This platform creates a big impact by showcasing how blockchain can solve trust issues in gaming and collectibles.
 
 ---
 
@@ -56,6 +54,63 @@ The long-term goal is to evolve this platform into a full NFT marketplace where 
 
 4. **`view_platform_stats(env: Env) -> PlatformStats`**  
    Returns the overall platform statistics including the total number of mystery boxes created, the number of opened boxes, and the number of boxes still sealed.
+
+---
+
+## Software Development Plan
+
+A structured approach was followed to develop this decentralized platform:
+
+1.  **Architecture Design**: Define the `MysteryBox` and `PlatformStats` data structures to be stored efficiently on the Stellar ledger.
+2.  **Smart Contract Implementation**: Development of core functions (`create_box`, `open_box`) using Rust and the Soroban framework.
+3.  **On-Chain Logic**: Implementation of the pseudo-random rarity logic using verifiable on-chain ledger data (timestamps).
+4.  **Testing & Optimization**: Comprehensive unit testing in `test.rs` to ensure contract security and avoid double-revealing.
+5.  **Frontend Integration**: Building a React-based application to interact with the smart contract using the Soroban JSON-RPC and Freighter wallet.
+6.  **Deployment**: Final deployment of the contract to the Stellar Testnet and configuration of global platform statistics tracking.
+
+---
+
+## About Me
+
+### Saurav Gupta
+- **IIT Bhilai**: 3rd Year, Computer Science and Engineering.
+- **Interests**: Blockchain Development, Full-Stack Applications, and Data Structures.
+
+**Personal Story:**
+I am a 3rd-year Computer Science student at IIT Bhilai, and this project marks my first deep dive into the world of blockchain. Discovering the power of decentralized systems and smart contracts on Stellar has been an incredible journey. What started as a curiosity about how 'trustless' systems work turned into building this NFT Mystery Box dApp, blending my passion for gaming mechanics with the transparency of Soroban.
+
+---
+
+## Installation Guide
+
+To get the project running locally, follow these steps:
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/Saurav1375/BIB-Day2-NFT-Mystery-Box.git
+    cd BIB-Day2-NFT-Mystery-Box
+    ```
+
+2.  **Prerequisites:**
+    - Install [Rust](https://www.rust-lang.org/tools/install)
+    - Install [Soroban CLI](https://soroban.stellar.org/docs/getting-started/setup#install-the-soroban-cli)
+    - Install [Node.js](https://nodejs.org/)
+
+3.  **Build the Smart Contract:**
+    ```bash
+    cd contract
+    soroban contract build
+    ```
+
+4.  **Run Tests:**
+    ```bash
+    cargo test
+    ```
+
+5.  **Deploy (Optional):**
+    ```bash
+    soroban contract deploy --network testnet --source-account <YOUR_ACCOUNT> --wasm target/wasm32-unknown-unknown/release/nft_mystery_box.wasm
+    ```
 
 ---
 
