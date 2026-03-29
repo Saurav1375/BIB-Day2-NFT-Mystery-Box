@@ -164,7 +164,11 @@ export async function callContract(
     let detail = "";
     try {
       if (getResult.resultXdr) {
-        detail = ` (Result XDR: ${getResult.resultXdr})`;
+        // If it's an XDR object, convert to base64, otherwise use string representation
+        const xdrStr = typeof getResult.resultXdr === "string" 
+          ? getResult.resultXdr 
+          : (getResult.resultXdr as any).toXDR?.("base64") || JSON.stringify(getResult.resultXdr);
+        detail = ` (Result XDR: ${xdrStr})`;
       }
     } catch {
       // ignore
