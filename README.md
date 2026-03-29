@@ -2,11 +2,20 @@
 
 <div align="center">
   <img src="assets/nft_mystery_box_mascot_1774775613312.png" alt="NFT Mystery Box Mascot" width="400">
-  
-  [![Website Logo](assets/Screenshot_20260329_155833.png)](https://bib-day2-nft-mystery-box.vercel.app/)
-  
-  <h3>🚀 [Live Demo](https://bib-day2-nft-mystery-box.vercel.app/)</h3>
-  
+
+  <br />
+  <br />
+
+  <a href="https://bib-day2-nft-mystery-box.vercel.app/" target="_blank">
+    <img src="assets/Screenshot_20260329_155833.png" alt="Website Preview" width="800">
+  </a>
+
+  <br />
+
+  <a href="https://bib-day2-nft-mystery-box.vercel.app/" target="_blank">
+    <h3>🚀 Play Live Demo</h3>
+  </a>
+
   <p><i>Empowering decentralized collectibles on the Stellar network.</i></p>
 </div>
 
